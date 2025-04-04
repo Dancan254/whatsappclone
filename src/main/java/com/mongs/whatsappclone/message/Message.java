@@ -15,6 +15,14 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
+@NamedQuery(
+        name = MessageConstants.FIND_MESSAGES_BY_CHAT_ID,
+        query = "select m from Message m where m.chat.id = :chatId ORDER BY m.createdDate"
+)
+@NamedQuery(
+        name = MessageConstants.SET_MESSAGES_TO_BE_SEEN_BY_CHAT,
+        query = "UPDATE Message SET state = :newState WHERE chat.id = :chatId"
+)
 public class Message extends BaseAuditingEntity {
 
     @Id
@@ -38,5 +46,5 @@ public class Message extends BaseAuditingEntity {
     private String receiverId;
     @Column(nullable = false, name = "sender_id")
     private String senderId;
-
+    private String mediaPath;
 }
