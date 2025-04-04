@@ -17,7 +17,20 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@NamedQuery(
+        name=UserConstants.FIND_USER_BY_EMAIL,
+        query = "SELECT u FROM User u WHERE u.email = :email"
+)
+@NamedQuery(
+        name=UserConstants.FIND_ALL_USERS_EXCEPT_SELF,
+        query = "SELECT u FROM User u WHERE u.id != :publicId"
+)
+@NamedQuery(
+        name = UserConstants.FIND_USER_BY_PUBLIC_ID,
+        query = "select u from User u where u.id = :publicId"
+)
 public class User extends BaseAuditingEntity {
+    private static final long LAST_ACTIVE_INTERVAL = 5;
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -32,5 +45,10 @@ public class User extends BaseAuditingEntity {
 
     @OneToMany(mappedBy = "recipient")
     private List<Chat> chatAsReceiver;
+
+    @Transient
+    public boolean isUserOnline() {
+        return lastSeen != null && lastSeen.isAfter(LocalDateTime.now().minusMinutes(LAST_ACTIVE_INTERVAL));
+    }
 
 }
