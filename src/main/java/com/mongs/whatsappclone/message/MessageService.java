@@ -3,6 +3,7 @@ package com.mongs.whatsappclone.message;
 import com.mongs.whatsappclone.chat.Chat;
 import com.mongs.whatsappclone.chat.ChatRepository;
 import com.mongs.whatsappclone.file.FileService;
+import com.mongs.whatsappclone.file.FileUtils;
 import com.mongs.whatsappclone.notification.Notification;
 import com.mongs.whatsappclone.notification.NotificationService;
 import com.mongs.whatsappclone.notification.NotificationType;
@@ -65,7 +66,13 @@ public class MessageService {
         //final String recipientId = getRecipientId(chat, authentication);
         messageRepository.setMessagesToBeSeenByChatId(chatId, MessageState.SEEN);
 
-        //todo notification
+        Notification notification = Notification.builder()
+                .chatId(chat.getId())
+                .senderId(getSenderId(chat, authentication))
+                .recipientId(getRecipientId(chat, authentication))
+                .notificationType(NotificationType.SEEN)
+                .build();
+        notificationService.sendNotification(chat.getRecipient().getId(), notification);
     }
     private String getRecipientId(Chat chat, Authentication authentication){
         if(chat.getSender().getId().equals(authentication.getName())){
@@ -90,7 +97,18 @@ public class MessageService {
         message.setMediaPath(filePath);
         messageRepository.save(message);
 
-        //todo notification
+        Notification notification = Notification.builder()
+                .chatId(chat.getId())
+                .content(filePath)
+                .senderId(senderId)
+                .recipientId(recipientId)
+                //.chatName(chat.getChatName(senderId))
+                .messageType(MessageType.IMAGE)
+                .notificationType(NotificationType.IMAGE)
+                .media(FileUtils.readFileFromLocation(filePath))
+                .build();
+
+        notificationService.sendNotification(recipientId, notification);
 
     }
 
