@@ -18,8 +18,8 @@ import java.util.stream.Stream;
 
 public class KeyCloakJwtAuthenticationConverter implements Converter<Jwt,  AbstractAuthenticationToken> {
     /**
-     * @param source 
-     * @return
+     * @param source
+     * @return An {@link AbstractAuthenticationToken} containing the {@link Jwt} and the authorities
      */
     @Override
     public AbstractAuthenticationToken convert(@NonNull Jwt source) {
