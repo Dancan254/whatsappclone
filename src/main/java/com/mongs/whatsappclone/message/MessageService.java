@@ -3,6 +3,9 @@ package com.mongs.whatsappclone.message;
 import com.mongs.whatsappclone.chat.Chat;
 import com.mongs.whatsappclone.chat.ChatRepository;
 import com.mongs.whatsappclone.file.FileService;
+import com.mongs.whatsappclone.notification.Notification;
+import com.mongs.whatsappclone.notification.NotificationService;
+import com.mongs.whatsappclone.notification.NotificationType;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -20,6 +23,7 @@ public class MessageService {
     private final ChatRepository chatRepository;
     private final MessageMapper mapper;
     private final FileService fileService;
+    private final NotificationService notificationService;
 
 
     public void save(MessageRequest messageRequest){
@@ -35,7 +39,15 @@ public class MessageService {
 
         messageRepository.save(message);
 
-        // todo notification
+        Notification notification = Notification.builder()
+                .chatId(chat.getId())
+                .content(messageRequest.getContent())
+                .senderId(messageRequest.getSenderId())
+                .chatName(chat.getChatName(message.getSenderId()))
+                .messageType(messageRequest.getType())
+                .notificationType(NotificationType.MESSAGE)
+                .build();
+        notificationService.sendNotification(chat.getRecipient().getId(), notification);
     }
 
     public List<MessageResponse> findChatMessages(String chatId){
