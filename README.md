@@ -32,7 +32,7 @@ A real-time messaging application built with Spring Boot, WebSocket, and Keycloa
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/yourname/whatsappclone.git
+git clone https://github.com/Dancan254/whatsappclone.git
 cd whatsappclone
 ```
 
